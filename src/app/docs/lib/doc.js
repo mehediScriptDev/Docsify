@@ -5,27 +5,47 @@ import { remark } from 'remark';
 import html from 'remark-html';
 import { log } from 'console';
 
-const postsDirectory = path.join(process.cwd(), 'docs');
+const postsDirectory = path.join(process.cwd(), 'src', 'app', 'docs');
 
 
 export function getDocuments() {
-//   return fs.readdirSync(postsDirectory);
-  console.log(postsDirectory);
-  const fileNames = fs.readdirSync(postsDirectory);
+  if (!fs.existsSync(postsDirectory)) {
+    console.warn(`Posts directory not found: ${postsDirectory}`);
+    return [];
+  }
+  // Only consider markdown files
+  const fileNames = fs.readdirSync(postsDirectory).filter((n) => n.toLowerCase().endsWith('.md'));
+
   const allDocuments = fileNames.map((fileName) => {
-    const id = fileName.replace(".md", "");
+    const id = fileName.replace(/\.md$/i, "");
 
     const fullPath = path.join(postsDirectory, fileName);
 
-    const fileContents = fs.readFileSync(fullPath, 'utf8');
+    // skip directories or missing files
+    try {
+      const stat = fs.lstatSync(fullPath);
+      if (!stat.isFile()) {
+        console.warn(`Skipping non-file: ${fullPath}`);
+        return null;
+      }
+    } catch (err) {
+      console.warn(`Cannot access ${fullPath}: ${err.message}`);
+      return null;
+    }
 
-    const matterResult = matter(fileContents);
+    try {
+      const fileContents = fs.readFileSync(fullPath, 'utf8');
+      const matterResult = matter(fileContents);
 
-    return {
-      id,
-      ...matterResult.data,
-    };
-  });
+      return {
+        id,
+        ...matterResult.data,
+      };
+    } catch (err) {
+      console.warn(`Failed to read/parse ${fullPath}: ${err.message}`);
+      return null;
+    }
+  }).filter(Boolean);
 
   return allDocuments.sort((a, b) => {
     if (a.order < b.order) {
