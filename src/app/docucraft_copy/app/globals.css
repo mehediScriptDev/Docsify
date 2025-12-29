@@ -1,0 +1,23 @@
+:root {
+  --bg: 255 255 255;
+  --fg: 15 23 42;
+  --muted: 100 116 139;
+  --border: 226 232 240;
+
+  --green-400: 34 197 94;
+  --green-500: 16 185 129;
+}
+
+html, body, #__next {
+  height: 100%;
+}
+
+.prose {
+  max-width: 65ch;
+  color: rgb(var(--fg));
+}
+
+.prose h1 {
+  font-size: 2.5rem;
+  line-height: 1.05;
+}

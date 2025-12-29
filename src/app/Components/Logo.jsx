@@ -1,10 +1,9 @@
-import Image from 'next/image';
-import Link from 'next/link';
-import React from 'react';
+import Link from "next/link";
+import Image from "next/image";
 
 const Logo = () => {
     return (
-       <div className="lg:flex">
+        <div className="lg:flex">
             <Link href="/">
                 <Image
                     className="h-6 w-auto"
